@@ -31,7 +31,7 @@ const options: ApexOptions = {
     axisBorder: {
       color: theme.colors.gray[600]
     },
-    axisticks: {
+    axisTicks: {
       color: theme.colors.gray[600]
     },
     categories: [
