@@ -2,43 +2,43 @@ import {
   Button,
   Flex,
   Stack
-} from '@chakra-ui/react'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
+} from "@chakra-ui/react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import * as z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Input } from '@/components/Form/Input'
+import { Input } from "@/components/Form/Input";
 
 const signInFormSchema = z.object({
-  email: z.string().min(1, 'Email é obrigatório').email('Email inválido'),
-  password: z.string().min(1, 'Senha obrigatória')
-})
+  email: z.string().min(1, "Email é obrigatório").email('Email inválido'),
+  password: z.string().min(1, "Senha obrigatória")
+});
 
-type SignInFormData = z.infer<typeof signInFormSchema>
+type SignInFormData = z.infer<typeof signInFormSchema>;
 
 export default function Home() {
   const { register, formState, handleSubmit } = useForm<SignInFormData>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
-      email: '',
-      password: ''
+      email: "",
+      password: ""
     }
-  })
+  });
 
-  const { errors } = formState
+  const { errors } = formState;
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values, event) => {
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
-    console.log(values)
-  }
+    console.log(values);
+  };
 
   return (
     <Flex
       w="100wv"
       h="100vh"
-      align={'center'}
-      justify={'center'}
+      align={"center"}
+      justify={"center"}
     >
       <Flex
         as="form"
@@ -75,5 +75,5 @@ export default function Home() {
         >Entrar</Button>
       </Flex>
     </Flex>
-  )
-}
+  );
+};

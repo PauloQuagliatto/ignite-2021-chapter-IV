@@ -22,13 +22,9 @@ const createUserFormSchema = z.object({
   email: z.string().min(1, 'Email é obrigatório').email('Email deve ser válido'),
   password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
   passwordConfirmation: z.string().min(6, 'Confirmação de senha deve ter no mínimo 6 caracteres'),
-}).superRefine(({ passwordConfirmation, password }, ctx) => {
-  if (passwordConfirmation !== password) {
-    ctx.addIssue({
-      code: "custom",
-      message: "As senhas são diferentes"
-    });
-  }
+}).refine((data) => data.password === data.passwordConfirmation, {
+  message: "As senhas são diferentes",
+  path: ["passwordConfirmation"]
 });
 
 type CreateUserFormData = z.infer<typeof createUserFormSchema>
