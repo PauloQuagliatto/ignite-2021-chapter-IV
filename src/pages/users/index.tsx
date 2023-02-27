@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useQuery } from "react-query";
 import {
   Box,
   Button,
@@ -7,6 +6,7 @@ import {
   Flex,
   Heading,
   Icon,
+  Spinner,
   Table,
   Tbody,
   Td,
@@ -16,37 +16,23 @@ import {
   Tr,
   useBreakpointValue
 } from "@chakra-ui/react";
-import { PencilSimpleLine, Plus, Spinner } from "phosphor-react";
+import { PencilSimpleLine, Plus } from "phosphor-react";
 
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Sidebar";
 import { Pagination } from "@/components/Pagination";
 
+import { useUsers } from "@/services/hooks/useUsers";
+import { useState } from "react";
+
 export default function UsersList() {
-  const { data, isLoading, error } = useQuery("users", async () => {
-    const response = await fetch("http://localhost:3000/api/users")
-    const data = await response.json()
-
-    const users = data.users.map((user) => {
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        createdAt: new Date(user.createdAt).toLocaleDateString("pt-BR", {
-          day: "2-digit",
-          month: "long",
-          year: "numeric"
-        })
-      }
-    });
-
-    return users;
-  })
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, isLoading, isFetching, error } = useUsers(currentPage);
 
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true
-  })
+  });
 
   return (
     <Box>
@@ -55,7 +41,11 @@ export default function UsersList() {
         <Sidebar />
         <Box flex="1" borderRadius={8} bg="gray.800" p="8">
           <Flex mb="8" justify="space-between" align="center">
-            <Heading size="lg" fontWeight="normal">Usuários</Heading>
+            <Heading size="lg" fontWeight="normal">
+              Usuários
+
+              {!isLoading && isFetching ? <Spinner size="sm" color="gray.500" ml="4" /> : null}
+            </Heading>
 
             <Link href="/users/create" passHref>
               <Button
@@ -69,13 +59,14 @@ export default function UsersList() {
               </Button>
             </Link>
           </Flex>
+
           {isLoading ?
             <Flex justify="center">
               <Spinner />
             </Flex>
             : error ?
               <Flex justify="center">
-                <Text> Falha</Text>
+                <Text>Falha</Text>
               </Flex>
               : <>
                 <Table colorScheme="white-alpha">
@@ -90,7 +81,7 @@ export default function UsersList() {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {data.map((user) => {
+                    {data!.users.map((user) => {
                       return (
                         <Tr key={user.id}>
                           <Td px={["4", "4", "6"]}>
@@ -121,7 +112,12 @@ export default function UsersList() {
                     })}
                   </Tbody>
                 </Table>
-                <Pagination /> </>}
+                <Pagination
+                  totalCountOfRegistries={200}
+                  currentPage={currentPage}
+                  onPageChange={setCurrentPage}
+                />
+              </>}
         </Box>
       </Flex>
     </Box>
